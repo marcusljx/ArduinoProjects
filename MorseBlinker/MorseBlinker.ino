@@ -4,7 +4,7 @@
 
 //============================================= GLOBALS
 // using pin 13
-int led = 13;
+int led = 8;
 
 // default blink on/off delay
 int unit = 250;
@@ -21,7 +21,10 @@ String MESSAGE = "HELLO WORLD";
 // the setup routine runs once when you press reset:
 void setup() {                
   // initialize the digital pin as an output.
-  pinMode(led, OUTPUT);     
+  pinMode(led, OUTPUT);
+  Serial.begin(9600);
+  while(!Serial);
+  Serial.println("Message is \"HELLO WORLD\"");
 }
 
 void on_LED(int time) {
@@ -51,21 +54,29 @@ void morse_blinkCode(String code) {
     else if(code.charAt(i) == '-') {
       on_LED(dash_value);
     }
-
+    
+    Serial.print(code.charAt(i));
+    
     // standard delay between each component
     off_LED(component_delay);
   }
 }
 
 void morse_blinkChar(String input) {
+  int delay;
   if(input == " ") {
-    off_LED(word_delay);
+    delay = word_delay;
   } 
   else {
     int pos = findStringPos(input);   // find corresponding morse code of character
     morse_blinkCode(morseSequences[pos]);  // blink the code
-    off_LED(char_delay);
+    delay = char_delay;
   }
+
+  Serial.print(" \t");
+  Serial.println(input);
+  
+  off_LED(delay);
 }
 
 void morse_blinkString(String input) {
@@ -76,6 +87,12 @@ void morse_blinkString(String input) {
 
 // the loop routine runs over and over again forever:
 void loop() {  // wait for a second
+  if(Serial.available()) {
+    MESSAGE = Serial.readString();
+    Serial.println(" == Message has Changed ==");
+  }
+
   morse_blinkString(MESSAGE);
+  Serial.println("--- End Of Message ---");
   off_LED(word_delay);
 }

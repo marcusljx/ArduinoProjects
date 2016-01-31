@@ -1,4 +1,6 @@
-int MotorPin = 52;
+int MotorPin = 9;
+int speed = 100;
+
 
 void setup() {
   pinMode(MotorPin, OUTPUT);
@@ -9,9 +11,11 @@ void setup() {
 
 void loop() {
   if(Serial.available()) {
-    int speed = Serial.parseInt();
+    speed = Serial.parseInt();
     if(speed >= 0 && speed <=255) {
       analogWrite(MotorPin, speed);
+      Serial.print("Speed changed to ");
+      Serial.println(speed);
     }
   }
 }
